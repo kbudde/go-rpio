@@ -27,9 +27,11 @@ func GetSensors() ([]Sensor, error) {
 		return nil, err
 	}
 	ids := strings.Split(string(b), "\n")
-	sensors := make([]Sensor, len(ids))
-	for i, s := range ids {
-		sensors[i] = Sensor{s}
+	var sensors []Sensor
+	for _, s := range ids {
+		if len(strings.TrimSpace(s)) > 0 {
+			sensors = append(sensors, Sensor{s})
+		}
 	}
 	return sensors, nil
 }
@@ -42,7 +44,7 @@ func (s *Sensor) ReadValue() (float64, error) {
 		return DefaultErrorValue, err
 	}
 	lines := strings.Split(string(b), "\n")
-	if len(lines) != 2 {
+	if len(lines) != 3 {
 		return DefaultErrorValue, errors.New("Sensor file: Unexpected size.")
 	}
 	valid, _ := regexp.MatchString(` YES$`, lines[0])
